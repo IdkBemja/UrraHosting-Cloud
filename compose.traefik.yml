@@ -3,8 +3,8 @@
 # que UrraHosting-WebPanel/GamePanel (ver plan.md seccion 6.3).
 #
 # Un solo dominio para toda la instancia:
-#   Web app + API: https://storage-${INSTANCE_ID}.${PUBLIC_BASE_DOMAIN}/
-#   WebDAV:        https://storage-${INSTANCE_ID}.${PUBLIC_BASE_DOMAIN}/dav/
+#   Web app + API: https://cloud-${INSTANCE_ID}.${PUBLIC_BASE_DOMAIN}/
+#   WebDAV:        https://cloud-${INSTANCE_ID}.${PUBLIC_BASE_DOMAIN}/dav/
 #
 # (Se evita un subdominio extra para WebDAV para no duplicar certificados
 # ni complicar el flujo de dominio custom del cliente via TeamDomain.)
@@ -15,18 +15,18 @@ services:
       - traefik-public
     # Labels como LISTA de strings, no mapa: Compose no interpola
     # variables dentro de claves de mapa YAML, solo dentro de valores.
-    # Con `traefik.http.routers.storage-${INSTANCE_ID}...` como clave de
+    # Con `traefik.http.routers.cloud-${INSTANCE_ID}...` como clave de
     # mapa, ${INSTANCE_ID} queda sin expandir en Traefik (bug ya
     # documentado y confirmado en UrraHosting-WebPanel/compose.traefik.yml).
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK}"
-      - "traefik.http.routers.storage-${INSTANCE_ID}.rule=Host(`storage-${INSTANCE_ID}.${PUBLIC_BASE_DOMAIN}`)"
-      - "traefik.http.routers.storage-${INSTANCE_ID}.entrypoints=${TRAEFIK_WEB_ENTRYPOINT}"
-      - "traefik.http.routers.storage-${INSTANCE_ID}.tls=true"
-      - "traefik.http.routers.storage-${INSTANCE_ID}.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
-      - "traefik.http.routers.storage-${INSTANCE_ID}.service=storage-${INSTANCE_ID}"
-      - "traefik.http.services.storage-${INSTANCE_ID}.loadbalancer.server.port=${APP_PORT}"
+      - "traefik.http.routers.cloud-${INSTANCE_ID}.rule=Host(`cloud-${INSTANCE_ID}.${PUBLIC_BASE_DOMAIN}`)"
+      - "traefik.http.routers.cloud-${INSTANCE_ID}.entrypoints=${TRAEFIK_WEB_ENTRYPOINT}"
+      - "traefik.http.routers.cloud-${INSTANCE_ID}.tls=true"
+      - "traefik.http.routers.cloud-${INSTANCE_ID}.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.routers.cloud-${INSTANCE_ID}.service=cloud-${INSTANCE_ID}"
+      - "traefik.http.services.cloud-${INSTANCE_ID}.loadbalancer.server.port=${APP_PORT}"
 
   webdav:
     networks:
@@ -34,12 +34,12 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK}"
-      - "traefik.http.routers.storage-${INSTANCE_ID}-dav.rule=Host(`storage-${INSTANCE_ID}.${PUBLIC_BASE_DOMAIN}`) && PathPrefix(`/dav`)"
-      - "traefik.http.routers.storage-${INSTANCE_ID}-dav.entrypoints=${TRAEFIK_WEB_ENTRYPOINT}"
-      - "traefik.http.routers.storage-${INSTANCE_ID}-dav.tls=true"
-      - "traefik.http.routers.storage-${INSTANCE_ID}-dav.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
-      - "traefik.http.routers.storage-${INSTANCE_ID}-dav.service=storage-${INSTANCE_ID}-dav"
-      - "traefik.http.services.storage-${INSTANCE_ID}-dav.loadbalancer.server.port=${WEBDAV_PORT}"
+      - "traefik.http.routers.cloud-${INSTANCE_ID}-dav.rule=Host(`cloud-${INSTANCE_ID}.${PUBLIC_BASE_DOMAIN}`) && PathPrefix(`/dav`)"
+      - "traefik.http.routers.cloud-${INSTANCE_ID}-dav.entrypoints=${TRAEFIK_WEB_ENTRYPOINT}"
+      - "traefik.http.routers.cloud-${INSTANCE_ID}-dav.tls=true"
+      - "traefik.http.routers.cloud-${INSTANCE_ID}-dav.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}"
+      - "traefik.http.routers.cloud-${INSTANCE_ID}-dav.service=cloud-${INSTANCE_ID}-dav"
+      - "traefik.http.services.cloud-${INSTANCE_ID}-dav.loadbalancer.server.port=${WEBDAV_PORT}"
 
 networks:
   traefik-public:

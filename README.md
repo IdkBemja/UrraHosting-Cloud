@@ -97,7 +97,7 @@ Las integraciones opcionales de Fase 3/4 (`STORAGE_BACKEND=s3`, `CLAMAV_HOST`, `
 Este repo está pensado para desplegarse como un `ServiceTemplate` de tipo `platform_stack` en **UrraHosting**, exactamente igual que WebPanel/GamePanel:
 
 - `compose.yml` declara los 5 servicios fijos (`app`, `webdav`, `worker`, `db`, `redis`), sin publicar puertos al host — todo el tráfico entra por Traefik.
-- `compose.traefik.yml` define las rutas: la web app en `storage-<instance-id>.<dominio>` y WebDAV en el mismo dominio bajo `/dav`.
+- `compose.traefik.yml` define las rutas: la web app en `cloud-<instance-id>.<dominio>` y WebDAV en el mismo dominio bajo `/dav`.
 
 ## Theming / white-label
 
