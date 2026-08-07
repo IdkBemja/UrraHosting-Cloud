@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Compartir {{ node.name }} - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="content-header">
+  <h2>Compartir "{{ node.name or 'Mi unidad' }}"</h2>
+</div>
+
+<div class="card">
+  <h3>Crear link publico</h3>
+  <form method="post" action="{{ url_for('drive.create_link', node_id=node.id) }}" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;align-items:end;">
+    {% include "_csrf.html" %}
+    <div>
+      <label for="permission">Permiso</label>
+      <select id="permission" name="permission">
+        <option value="viewer">Solo lectura</option>
+        <option value="editor">Editor</option>
+      </select>
+    </div>
+    <div>
+      <label for="password">Contrasena (opcional)</label>
+      <input id="password" name="password" type="password" placeholder="Sin contrasena">
+    </div>
+    <div>
+      <label for="expires_in_days">Expira en (dias, opcional)</label>
+      <input id="expires_in_days" name="expires_in_days" type="number" min="1" placeholder="Nunca">
+    </div>
+    <div>
+      <button class="btn" type="submit">Crear link</button>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <h3>Compartir con un usuario</h3>
+  <form method="post" action="{{ url_for('drive.create_with_user', node_id=node.id) }}" style="display:flex;gap:.75rem;align-items:end;flex-wrap:wrap;">
+    {% include "_csrf.html" %}
+    <div style="flex:1;min-width:200px;">
+      <label for="username">Usuario o email</label>
+      <input id="username" name="username" required>
+    </div>
+    <div>
+      <label for="permission2">Permiso</label>
+      <select id="permission2" name="permission">
+        <option value="viewer">Solo lectura</option>
+        <option value="editor">Editor</option>
+      </select>
+    </div>
+    <div>
+      <button class="btn" type="submit">Compartir</button>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <h3>Comparticiones activas</h3>
+  <table class="file-table">
+    <thead><tr><th>Tipo</th><th>Destino</th><th>Permiso</th><th>Expira</th><th></th></tr></thead>
+    <tbody>
+      {% for share in shares %}
+      <tr>
+        <td>{{ "Link publico" if share.target_type == "public_link" else "Usuario" }}</td>
+        <td class="muted">
+          {% if share.target_type == "public_link" %}
+            <a href="{{ url_for('public.view_share', token=share.token, _external=True) }}" target="_blank">{{ url_for('public.view_share', token=share.token, _external=True) }}</a>
+          {% else %}
+            {{ share.target_user.username if share.target_user else "usuario eliminado" }}
+          {% endif %}
+        </td>
+        <td>{{ share.permission }}</td>
+        <td class="muted">{{ share.expires_at.strftime("%Y-%m-%d") if share.expires_at else "Nunca" }}</td>
+        <td class="row-actions">
+          <form method="post" action="{{ url_for('drive.revoke', share_id=share.id) }}">
+            {% include "_csrf.html" %}
+            <button class="btn danger" type="submit">Revocar</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="muted">Sin comparticiones todavia</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

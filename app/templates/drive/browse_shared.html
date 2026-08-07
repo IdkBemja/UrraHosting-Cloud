@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ folder.name }} (compartido) - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="content-header">
+  <h2>📁 {{ folder.name }} <span class="muted small">(compartido, {{ permission }})</span></h2>
+</div>
+<div class="card">
+  <table class="file-table">
+    <thead><tr><th>Nombre</th><th>Tamano</th><th>Modificado</th></tr></thead>
+    <tbody>
+      {% for node in children %}
+      <tr>
+        <td>
+          {% if node.type == 'folder' %}
+          <a href="{{ url_for('drive.browse_shared', node_id=node.id) }}">📁 {{ node.name }}</a>
+          {% else %}
+          <a href="{{ url_for('drive.browse_shared', node_id=node.id) }}">📄 {{ node.name }}</a>
+          {% endif %}
+        </td>
+        <td class="muted">{{ "%.1f KB"|format(node.size_bytes / 1024) if node.type == 'file' else "-" }}</td>
+        <td class="muted">{{ node.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3" class="muted">Esta carpeta esta vacia</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Mi unidad - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="content-header">
+  <div class="breadcrumbs">
+    <a href="{{ url_for('drive.my_drive') }}">Mi unidad</a>
+    {% for crumb in breadcrumbs %}
+      <span>/</span>
+      <a href="{{ url_for('drive.browse', node_id=crumb.id) }}">{{ crumb.name }}</a>
+    {% endfor %}
+  </div>
+  <form method="post" action="{{ url_for('drive.mkdir', node_id=folder.id) }}" style="display:flex;gap:.5rem;">
+    {% include "_csrf.html" %}
+    <input name="name" placeholder="Nueva carpeta" required style="min-height:38px;">
+    <button class="btn ghost" type="submit">+ Carpeta</button>
+  </form>
+</div>
+
+<form id="upload-form" method="post" action="{{ url_for('drive.upload', node_id=folder.id) }}" enctype="multipart/form-data" data-parent-id="{{ folder.id }}">
+  {% include "_csrf.html" %}
+  <div class="drop-zone" x-data="{ over: false }"
+       @dragover.prevent="over = true" @dragleave.prevent="over = false"
+       @drop.prevent="over = false; $refs.fileInput.files = $event.dataTransfer.files; $refs.fileInput.dispatchEvent(new Event('change'))"
+       :class="over ? 'is-dragover' : ''">
+    Arrastra un archivo aqui, o
+    <label class="btn ghost" style="display:inline-flex;cursor:pointer;">
+      elige un archivo
+      <input x-ref="fileInput" type="file" name="file" style="display:none;">
+    </label>
+  </div>
+</form>
+<script src="{{ url_for('static', filename='js/chunked-upload.js') }}"></script>
+
+<div class="card">
+  <table class="file-table">
+    <thead><tr><th>Nombre</th><th>Tamano</th><th>Modificado</th><th></th></tr></thead>
+    <tbody>
+      {% for node in children %}
+      <tr>
+        <td>
+          <div class="file-row-name">
+            {% if node.type == 'folder' %}
+            <a href="{{ url_for('drive.browse', node_id=node.id) }}">📁 {{ node.name }}</a>
+            {% else %}
+            <a href="{{ url_for('drive.preview', node_id=node.id) }}">📄 {{ node.name }}</a>
+            {% endif %}
+          </div>
+        </td>
+        <td class="muted">{{ "%.1f KB"|format(node.size_bytes / 1024) if node.type == 'file' else "-" }}</td>
+        <td class="muted">{{ node.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
+        <td class="row-actions">
+          {% if node.type == 'file' %}
+          <a class="btn ghost" href="{{ url_for('drive.download', node_id=node.id) }}">Descargar</a>
+          <a class="btn ghost" href="{{ url_for('drive.list_versions', node_id=node.id) }}">Versiones</a>
+          {% set ext = node.name.rsplit('.', 1)[-1]|lower if '.' in node.name else '' %}
+          {% if onlyoffice_enabled and ext in ['doc','docx','odt','rtf','txt','xls','xlsx','ods','csv','ppt','pptx','odp'] %}
+          <a class="btn ghost" href="{{ url_for('drive.edit_document', node_id=node.id) }}">Editar</a>
+          {% endif %}
+          {% endif %}
+          <a class="btn ghost" href="{{ url_for('drive.share_node', node_id=node.id) }}">Compartir</a>
+          <form method="post" action="{{ url_for('drive.trash_node', node_id=node.id) }}">
+            {% include "_csrf.html" %}
+            <button class="btn ghost" type="submit">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="muted">Esta carpeta esta vacia</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Versiones de {{ node.name }} - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="content-header"><h2>Versiones de "{{ node.name }}"</h2></div>
+<div class="card">
+  <table class="file-table">
+    <thead><tr><th>Fecha</th><th>Tamano</th><th></th></tr></thead>
+    <tbody>
+      <tr>
+        <td>{{ node.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
+        <td class="muted">{{ "%.1f KB"|format(node.size_bytes / 1024) }}</td>
+        <td class="muted">Version actual</td>
+      </tr>
+      {% for version in versions %}
+      <tr>
+        <td>{{ version.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+        <td class="muted">{{ "%.1f KB"|format(version.size_bytes / 1024) }}</td>
+        <td class="row-actions">
+          <a class="btn ghost" href="{{ url_for('drive.download_version', node_id=node.id, version_id=version.id) }}">Descargar</a>
+          <form method="post" action="{{ url_for('drive.restore_version', node_id=node.id, version_id=version.id) }}" data-confirm="Restaurar esta version? La version actual se guardara como una version nueva.">
+            {% include "_csrf.html" %}
+            <button class="btn ghost" type="submit">Restaurar</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3" class="muted">Sin versiones anteriores</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

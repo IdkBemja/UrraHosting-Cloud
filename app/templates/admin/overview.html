@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Resumen - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="content-header">
+  <h2>Resumen de la instancia</h2>
+</div>
+
+<div class="stat-grid">
+  <div class="card stat-card">
+    <div class="muted small">Almacenamiento usado</div>
+    <div class="value">{{ "%.2f"|format(used_bytes / 1024**3) }} GB</div>
+    <div class="muted small">de {{ "%.0f"|format(settings.total_quota_bytes / 1024**3) }} GB</div>
+  </div>
+  <div class="card stat-card">
+    <div class="muted small">Usuarios</div>
+    <div class="value">{{ user_count }}</div>
+  </div>
+  <div class="card stat-card">
+    <div class="muted small">Archivos</div>
+    <div class="value">{{ file_count }}</div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Actividad reciente</h3>
+  <table class="file-table">
+    <thead><tr><th>Fecha</th><th>Accion</th><th>IP</th></tr></thead>
+    <tbody>
+      {% for entry in recent_activity %}
+      <tr>
+        <td>{{ entry.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+        <td>{{ entry.action }}</td>
+        <td class="muted">{{ entry.ip or "-" }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3" class="muted">Sin actividad todavia</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

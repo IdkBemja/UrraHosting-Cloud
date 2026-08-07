@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Compartido por mi - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="content-header"><h2>Compartido por mi</h2></div>
+<div class="card">
+  <table class="file-table">
+    <thead><tr><th>Elemento</th><th>Tipo</th><th>Destino</th><th>Permiso</th><th></th></tr></thead>
+    <tbody>
+      {% for share in shares %}
+      <tr>
+        <td>{{ "📁" if share.node.type == "folder" else "📄" }} {{ share.node.name }}</td>
+        <td>{{ "Link publico" if share.target_type == "public_link" else "Usuario" }}</td>
+        <td class="muted">
+          {% if share.target_type == "public_link" %}enlace{% else %}{{ share.target_user.username if share.target_user else "-" }}{% endif %}
+        </td>
+        <td>{{ share.permission }}</td>
+        <td class="row-actions">
+          <a class="btn ghost" href="{{ url_for('drive.share_node', node_id=share.node_id) }}">Gestionar</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="muted">No has compartido nada todavia</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

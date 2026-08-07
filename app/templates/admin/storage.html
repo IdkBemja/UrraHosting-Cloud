@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Almacenamiento - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="content-header"><h2>Almacenamiento</h2></div>
+
+<form method="post" action="{{ url_for('admin.update_storage') }}">
+  {% include "_csrf.html" %}
+  <div class="card">
+    <h3>Cuotas</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem;">
+      <div>
+        <label for="total_quota_gb">Cuota total de la instancia (GB)</label>
+        <input id="total_quota_gb" name="total_quota_gb" type="number" min="1" value="{{ settings.total_quota_bytes // (1024**3) }}">
+      </div>
+      <div>
+        <label for="default_user_quota_gb">Cuota por defecto de usuarios nuevos (GB)</label>
+        <input id="default_user_quota_gb" name="default_user_quota_gb" type="number" min="1" value="{{ settings.default_user_quota_bytes // (1024**3) }}">
+      </div>
+      <div>
+        <label for="max_upload_mb">Tamano maximo de subida (MB)</label>
+        <input id="max_upload_mb" name="max_upload_mb" type="number" min="1" value="{{ settings.max_upload_mb }}">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Politica de retencion</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem;">
+      <div>
+        <label for="trash_retention_days">Papelera: dias antes de purgar</label>
+        <input id="trash_retention_days" name="trash_retention_days" type="number" min="1" value="{{ settings.trash_retention_days }}">
+      </div>
+      <div>
+        <label for="version_retention_count">Versiones a conservar por archivo</label>
+        <input id="version_retention_count" name="version_retention_count" type="number" min="1" value="{{ settings.version_retention_count }}">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Restricciones de archivo</h3>
+    <label for="allowed_extensions">Extensiones permitidas (separadas por coma, vacio = todas)</label>
+    <input id="allowed_extensions" name="allowed_extensions" placeholder="jpg,png,pdf,docx" value="{{ settings.allowed_extensions or '' }}">
+  </div>
+
+  <div class="card">
+    <h3>Seguridad</h3>
+    <label class="toggle-row">
+      <input type="checkbox" name="enforce_2fa_for_admins" {{ "checked" if settings.enforce_2fa_for_admins else "" }}>
+      Forzar verificacion en dos pasos (2FA) para todas las cuentas admin/owner
+    </label>
+    <p class="muted small">Si se activa, cualquier admin/owner sin 2FA configurado sera redirigido a configurarlo antes de poder usar el resto del panel.</p>
+  </div>
+
+  <button class="btn" type="submit">Guardar cambios</button>
+</form>
+{% endblock %}

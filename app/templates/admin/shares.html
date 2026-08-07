@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Comparticiones - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="content-header"><h2>Comparticiones activas</h2></div>
+<div class="card">
+  <table class="file-table">
+    <thead><tr><th>Elemento</th><th>Creado por</th><th>Tipo</th><th>Destino</th><th>Expira</th><th></th></tr></thead>
+    <tbody>
+      {% for share in shares %}
+      <tr>
+        <td>{{ "📁" if share.node.type == "folder" else "📄" }} {{ share.node.name or "(raiz)" }}</td>
+        <td class="muted">{{ share.node.owner.username }}</td>
+        <td>{{ "Link publico" if share.target_type == "public_link" else "Usuario" }}</td>
+        <td class="muted">{{ share.target_user.username if share.target_user else "enlace" }}</td>
+        <td class="muted">{{ share.expires_at.strftime("%Y-%m-%d") if share.expires_at else "Nunca" }}</td>
+        <td class="row-actions">
+          <form method="post" action="{{ url_for('admin.revoke_share', share_id=share.id) }}">
+            {% include "_csrf.html" %}
+            <button class="btn danger" type="submit">Revocar</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="muted">Sin comparticiones activas</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

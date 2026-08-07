@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Buscar - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="content-header"><h2>Resultados para "{{ query }}"</h2></div>
+<div class="card">
+  <table class="file-table">
+    <thead><tr><th>Nombre</th><th>Tipo</th><th>Modificado</th></tr></thead>
+    <tbody>
+      {% for node in results %}
+      <tr>
+        <td>
+          {% if node.type == 'folder' %}
+          <a href="{{ url_for('drive.browse', node_id=node.id) }}">📁 {{ node.name }}</a>
+          {% else %}
+          <a href="{{ url_for('drive.preview', node_id=node.id) }}">📄 {{ node.name }}</a>
+          {% endif %}
+        </td>
+        <td class="muted">{{ node.type }}</td>
+        <td class="muted">{{ node.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3" class="muted">{{ "Sin resultados" if query else "Escribe algo para buscar" }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

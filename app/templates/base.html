@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es" data-theme="{{ theme_mode }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ app_name }}{% endblock %}</title>
+  <link rel="icon" href="{{ favicon_url }}">
+  <link rel="stylesheet" href="{{ url_for('theming.theme_css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <script src="{{ url_for('static', filename='vendor/htmx.min.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='vendor/alpine.min.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/confirm.js') }}" defer></script>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token() }}"}'>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="{{ logo_url }}" alt="{{ app_name }}">
+        <strong>{{ app_name }}</strong>
+      </div>
+      <nav>
+        <a href="{{ url_for('drive.my_drive') }}" class="{{ 'active' if request.blueprint == 'drive' and request.endpoint in ('drive.my_drive', 'drive.browse') else '' }}">Mi unidad</a>
+        <a href="{{ url_for('drive.shared_with_me') }}" class="{{ 'active' if request.endpoint == 'drive.shared_with_me' else '' }}">Compartido conmigo</a>
+        <a href="{{ url_for('drive.shared_by_me') }}" class="{{ 'active' if request.endpoint == 'drive.shared_by_me' else '' }}">Compartido por mi</a>
+        <a href="{{ url_for('drive.trash') }}" class="{{ 'active' if request.endpoint == 'drive.trash' else '' }}">Papelera</a>
+        <a href="{{ url_for('drive.settings') }}" class="{{ 'active' if request.endpoint and request.endpoint.startswith('drive.settings') else '' }}">Ajustes</a>
+        {% if current_user.is_authenticated and current_user.is_admin %}
+        <div class="muted small" style="margin-top:1rem;padding:0 .7rem;">Administracion</div>
+        <a href="{{ url_for('admin.index') }}" class="{{ 'active' if request.endpoint == 'admin.index' else '' }}">Resumen</a>
+        <a href="{{ url_for('admin.list_users') }}" class="{{ 'active' if request.endpoint == 'admin.list_users' else '' }}">Usuarios</a>
+        <a href="{{ url_for('admin.list_files') }}" class="{{ 'active' if request.endpoint == 'admin.list_files' else '' }}">Archivos</a>
+        <a href="{{ url_for('admin.list_shares') }}" class="{{ 'active' if request.endpoint == 'admin.list_shares' else '' }}">Comparticiones</a>
+        {% if current_user.is_owner %}
+        <a href="{{ url_for('admin.edit_branding') }}" class="{{ 'active' if request.endpoint == 'admin.edit_branding' else '' }}">Marca</a>
+        <a href="{{ url_for('admin.edit_storage') }}" class="{{ 'active' if request.endpoint == 'admin.edit_storage' else '' }}">Almacenamiento</a>
+        {% endif %}
+        {% endif %}
+      </nav>
+      <form action="{{ url_for('drive.search') }}" method="get" style="padding:0 .3rem;">
+        <input name="q" placeholder="Buscar en mi unidad..." value="{{ request.args.get('q', '') }}" style="min-height:36px;">
+      </form>
+      <div class="spacer"></div>
+      {% if current_user.is_authenticated %}
+      <form action="{{ url_for('auth.logout') }}" method="post">
+        <button class="btn ghost" type="submit" style="width:100%;">Cerrar sesion ({{ current_user.username }})</button>
+      </form>
+      {% endif %}
+    </aside>
+    <main class="content">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,196 @@
+name: cloud-${INSTANCE_ID}
+
+# Arquitectura simple de "platform_stack": a diferencia de WebPanel, esta
+# app NO construye/despliega codigo de terceros, asi que no necesita el
+# patron orchestrator + docker-socket-proxy. Todos los servicios son fijos
+# y se declaran directamente aqui; el Dashboard (docker-host) los levanta
+# con `docker compose -p ${INSTANCE_ID} up -d --build` (ver plan.md
+# seccion 6).
+x-instance-env: &instance-env
+  INSTANCE_ID: ${INSTANCE_ID}
+  DATA_DIR: /data
+  APP_PORT: ${APP_PORT}
+  WEBDAV_PORT: ${WEBDAV_PORT}
+  PUBLIC_BASE_DOMAIN: ${PUBLIC_BASE_DOMAIN:-}
+  TRAEFIK_PUBLIC_NETWORK: ${TRAEFIK_PUBLIC_NETWORK}
+  TRAEFIK_WEB_ENTRYPOINT: ${TRAEFIK_WEB_ENTRYPOINT}
+  TRAEFIK_CERT_RESOLVER: ${TRAEFIK_CERT_RESOLVER}
+  TRUSTED_PROXY_COUNT: ${TRUSTED_PROXY_COUNT:-1}
+  APP_USER: ${APP_USER}
+  APP_PASSWORD: ${APP_PASSWORD}
+  APP_SECRET: ${APP_SECRET}
+  ORCHESTRATOR_TOKEN: ${ORCHESTRATOR_TOKEN}
+  DATABASE_URL: postgresql+psycopg2://cloud:${DB_PASSWORD}@db:5432/cloud
+  REDIS_URL: ${REDIS_URL}
+  SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE}
+  DEBUG: ${DEBUG}
+  MAX_UPLOAD_MB: ${MAX_UPLOAD_MB}
+  INSTANCE_STORAGE_GB: ${INSTANCE_STORAGE_GB}
+  DEFAULT_USER_QUOTA_GB: ${DEFAULT_USER_QUOTA_GB}
+  TRASH_RETENTION_DAYS: ${TRASH_RETENTION_DAYS}
+  VERSION_RETENTION_COUNT: ${VERSION_RETENTION_COUNT}
+
+x-container-hardening: &container-hardening
+  cap_drop: ["ALL"]
+  security_opt: ["no-new-privileges:true"]
+  read_only: true
+  tmpfs:
+    - /tmp:size=128m,mode=1777
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: ${INSTANCE_ID}_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cloud
+      POSTGRES_USER: cloud
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - cloud_internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cloud -d cloud"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+    labels:
+      com.urrahosting.instance: ${INSTANCE_ID}
+      com.urrahosting.role: cloud-db
+
+  redis:
+    image: redis:7-alpine
+    container_name: ${INSTANCE_ID}_redis
+    restart: unless-stopped
+    command: ["redis-server", "--save", "60", "1", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - cloud_internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+    labels:
+      com.urrahosting.instance: ${INSTANCE_ID}
+      com.urrahosting.role: cloud-redis
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${INSTANCE_ID}_app
+    restart: unless-stopped
+    command: ["sh", "-c", "python -m app.cli migrate && exec gunicorn --bind 0.0.0.0:${APP_PORT} --workers 1 --threads 8 --timeout 1900 app.main:app"]
+    environment:
+      <<: *instance-env
+    volumes:
+      - ${DATA_DIR}/files:/data/files
+      - ${DATA_DIR}/branding:/data/branding
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - cloud_internal
+      - traefik-public
+    <<: *container-hardening
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os, urllib.request; urllib.request.urlopen('http://127.0.0.1:' + os.environ['APP_PORT'] + '/healthz', timeout=3)"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: "${APP_CPU_LIMIT:-1.0}"
+          memory: ${APP_MEMORY_LIMIT:-768M}
+    labels:
+      com.urrahosting.instance: ${INSTANCE_ID}
+      com.urrahosting.role: cloud-app
+
+  webdav:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${INSTANCE_ID}_webdav
+    restart: unless-stopped
+    command: ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${WEBDAV_PORT} --workers 2 --threads 4 --timeout 1900 app.webdav_app:app"]
+    environment:
+      <<: *instance-env
+    volumes:
+      - ${DATA_DIR}/files:/data/files
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - cloud_internal
+      - traefik-public
+    <<: *container-hardening
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 384M
+    labels:
+      com.urrahosting.instance: ${INSTANCE_ID}
+      com.urrahosting.role: cloud-webdav
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${INSTANCE_ID}_worker
+    restart: unless-stopped
+    command: ["python", "-m", "app.worker.worker_main"]
+    environment:
+      <<: *instance-env
+    volumes:
+      - ${DATA_DIR}/files:/data/files
+      - ${DATA_DIR}/branding:/data/branding
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - cloud_internal
+    <<: *container-hardening
+    deploy:
+      resources:
+        limits:
+          cpus: "${WORKER_CPU_LIMIT:-0.5}"
+          memory: ${WORKER_MEMORY_LIMIT:-512M}
+    labels:
+      com.urrahosting.instance: ${INSTANCE_ID}
+      com.urrahosting.role: cloud-worker
+
+volumes:
+  db_data:
+    name: ${INSTANCE_ID}_db_data
+  redis_data:
+    name: ${INSTANCE_ID}_redis_data
+
+networks:
+  cloud_internal:
+    name: ${INSTANCE_ID}_cloud_internal
+    internal: true
+    labels:
+      com.urrahosting.instance: ${INSTANCE_ID}
+  traefik-public:
+    name: ${TRAEFIK_PUBLIC_NETWORK}
+    external: true

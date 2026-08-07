@@ -1,0 +1,34 @@
+# Uso: docker compose -f compose.yml -f compose.dev.yml up --build
+# Publica los puertos directamente al host (sin Traefik) y monta el
+# codigo como bind mount para reload rapido durante desarrollo local.
+services:
+  app:
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    volumes:
+      - ./app:/app/app
+      - ./config:/app/config
+    environment:
+      DEBUG: "true"
+      SESSION_COOKIE_SECURE: "false"
+    read_only: false
+
+  webdav:
+    ports:
+      - "${WEBDAV_PORT}:${WEBDAV_PORT}"
+    volumes:
+      - ./app:/app/app
+    read_only: false
+
+  worker:
+    volumes:
+      - ./app:/app/app
+    read_only: false
+
+  db:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Papelera - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="content-header">
+  <h2>Papelera</h2>
+</div>
+
+<div class="card">
+  <table class="file-table">
+    <thead><tr><th>Nombre</th><th>Eliminado</th><th></th></tr></thead>
+    <tbody>
+      {% for node in items %}
+      <tr>
+        <td>{{ "📁" if node.type == "folder" else "📄" }} {{ node.name }}</td>
+        <td class="muted">{{ node.trashed_at.strftime("%Y-%m-%d %H:%M") if node.trashed_at else "-" }}</td>
+        <td class="row-actions">
+          <form method="post" action="{{ url_for('drive.restore', node_id=node.id) }}">
+            {% include "_csrf.html" %}
+            <button class="btn ghost" type="submit">Restaurar</button>
+          </form>
+          <form method="post" action="{{ url_for('drive.purge', node_id=node.id) }}" data-confirm="Eliminar definitivamente?">
+            {% include "_csrf.html" %}
+            <button class="btn danger" type="submit">Eliminar definitivamente</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3" class="muted">La papelera esta vacia</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

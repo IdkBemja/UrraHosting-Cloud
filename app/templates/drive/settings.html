@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Ajustes - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="content-header"><h2>Ajustes</h2></div>
+
+{% if new_password %}
+<div class="card" style="border-color:var(--primary);">
+  <h3>Contrasena de aplicacion creada: "{{ new_password_label }}"</h3>
+  <p class="muted">Copiala ahora - no se puede volver a mostrar. Usala (con tu usuario, <strong>{{ current_user.username }}</strong>) para conectar clientes WebDAV/sync, nunca tu contrasena principal.</p>
+  <input readonly value="{{ new_password }}" onclick="this.select()" style="font-family:monospace;">
+</div>
+{% endif %}
+
+<div class="card">
+  <h3>Verificacion en dos pasos (2FA)</h3>
+  {% if current_user.totp_enabled %}
+  <p class="muted small">2FA esta activado en tu cuenta.</p>
+  <form method="post" action="{{ url_for('drive.disable_2fa') }}" style="display:flex;gap:.5rem;align-items:end;">
+    {% include "_csrf.html" %}
+    <div style="flex:1;">
+      <label for="password2fa">Contrasena (para confirmar)</label>
+      <input id="password2fa" name="password" type="password" required>
+    </div>
+    <button class="btn danger" type="submit">Desactivar 2FA</button>
+  </form>
+  {% else %}
+  <p class="muted small">Anade una capa extra de seguridad a tu cuenta con una app de autenticacion.</p>
+  <a class="btn" href="{{ url_for('drive.setup_2fa') }}">Activar 2FA</a>
+  {% endif %}
+</div>
+
+{% if brand.supports_dark_mode %}
+<div class="card">
+  <h3>Tema</h3>
+  <form method="post" action="{{ url_for('drive.update_theme') }}" style="display:flex;gap:.5rem;align-items:end;">
+    {% include "_csrf.html" %}
+    <select name="theme_mode">
+      <option value="system" {{ "selected" if current_user.theme_mode == "system" else "" }}>Segun el sistema</option>
+      <option value="light" {{ "selected" if current_user.theme_mode == "light" else "" }}>Claro</option>
+      <option value="dark" {{ "selected" if current_user.theme_mode == "dark" else "" }}>Oscuro</option>
+    </select>
+    <button class="btn" type="submit">Guardar</button>
+  </form>
+</div>
+{% endif %}
+
+<div class="card">
+  <h3>Conectar como unidad de red (WebDAV)</h3>
+  <p class="muted">URL: <code>{{ webdav_url }}</code> — usuario: <code>{{ current_user.username }}</code>, contrasena: una "contrasena de aplicacion" de abajo (nunca tu contrasena principal).</p>
+  <p class="muted small">
+    <strong>Windows</strong>: Explorador de archivos → "Agregar una ubicacion de red" → pega la URL.<br>
+    <strong>macOS</strong>: Finder → Ir → Conectar al servidor → pega la URL.<br>
+    <strong>Linux</strong>: <code>davfs2</code> o el gestor de archivos (Nautilus/Dolphin) con "Conectar a servidor".
+  </p>
+
+  <h4>Contrasenas de aplicacion</h4>
+  <form method="post" action="{{ url_for('drive.create_app_password') }}" style="display:flex;gap:.5rem;margin-bottom:1rem;">
+    {% include "_csrf.html" %}
+    <input name="label" placeholder="Ej: PC de la oficina" required>
+    <button class="btn ghost" type="submit">Crear</button>
+  </form>
+  <table class="file-table">
+    <thead><tr><th>Etiqueta</th><th>Creada</th><th>Ultimo uso</th><th></th></tr></thead>
+    <tbody>
+      {% for ap in app_passwords %}
+      <tr>
+        <td>{{ ap.label }}</td>
+        <td class="muted">{{ ap.created_at.strftime("%Y-%m-%d") }}</td>
+        <td class="muted">{{ ap.last_used_at.strftime("%Y-%m-%d %H:%M") if ap.last_used_at else "Nunca" }}</td>
+        <td class="row-actions">
+          <form method="post" action="{{ url_for('drive.revoke_app_password', app_password_id=ap.id) }}">
+            {% include "_csrf.html" %}
+            <button class="btn danger" type="submit">Revocar</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="muted">Sin contrasenas de aplicacion todavia</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

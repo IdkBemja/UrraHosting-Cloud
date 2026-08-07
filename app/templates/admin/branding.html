@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Marca - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="content-header">
+  <h2>Marca (branding)</h2>
+</div>
+
+<form method="post" action="{{ url_for('admin.update_branding') }}" enctype="multipart/form-data">
+  {% include "_csrf.html" %}
+
+  <div class="card">
+    <h3>Nombre de la aplicacion</h3>
+    <input name="app_name" value="{{ brand.app_name }}" maxlength="120" placeholder="UrraHosting Cloud">
+    <p class="muted small">Se muestra en el sidebar, la pestana del navegador y la pantalla de inicio de sesion.</p>
+  </div>
+
+  <div class="card">
+    <h3>Logo e icono</h3>
+    <p class="muted small">
+      Si no subes uno propio, se usa el logo/favicon por defecto de UrraHosting
+      (nunca queda la instancia sin marca visual).
+    </p>
+    <div style="display:flex;gap:2rem;flex-wrap:wrap;">
+      <div>
+        <label>Logo actual</label><br>
+        <img src="{{ logo_url }}" alt="logo" style="width:64px;height:64px;border-radius:12px;margin:.4rem 0;">
+        <input type="file" name="logo" accept=".svg,.png,.webp">
+        {% if brand.logo_url %}
+        <label class="toggle-row"><input type="checkbox" name="reset_logo"> Volver al logo por defecto</label>
+        {% endif %}
+      </div>
+      <div>
+        <label>Favicon actual</label><br>
+        <img src="{{ favicon_url }}" alt="favicon" style="width:32px;height:32px;border-radius:8px;margin:.4rem 0;">
+        <input type="file" name="favicon" accept=".svg,.png,.webp">
+        {% if brand.favicon_url %}
+        <label class="toggle-row"><input type="checkbox" name="reset_favicon"> Volver al favicon por defecto</label>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card" x-data="{ preset: '{{ brand.theme_preset }}' }">
+    <h3>Tema de colores</h3>
+    <div class="preset-grid">
+      {% for key, preset in presets.items() %}
+      <label class="preset-option" :class="preset === '{{ key }}' ? 'selected' : ''">
+        <input type="radio" name="theme_preset" value="{{ key }}" x-model="preset" style="display:none;">
+        {% if key != 'custom' %}
+        <div class="preset-swatch" style="background:linear-gradient(135deg, {{ preset.primary }}, {{ preset.secondary }});"></div>
+        {% endif %}
+        {{ preset.label }}
+      </label>
+      {% endfor %}
+    </div>
+
+    <div x-show="preset === 'custom'" style="margin-top:1rem;">
+      <div class="color-swatch-row">
+        <div class="color-field"><label>Primario</label><input type="color" name="primary" value="{{ brand.primary }}"></div>
+        <div class="color-field"><label>Secundario</label><input type="color" name="secondary" value="{{ brand.secondary }}"></div>
+        <div class="color-field"><label>Acento</label><input type="color" name="accent" value="{{ brand.accent }}"></div>
+        <div class="color-field"><label>Oscuro</label><input type="color" name="dark" value="{{ brand.dark }}"></div>
+        <div class="color-field"><label>Claro</label><input type="color" name="light" value="{{ brand.light }}"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Modo oscuro</h3>
+    <label class="toggle-row">
+      <input type="checkbox" name="supports_dark_mode" {{ "checked" if brand.supports_dark_mode else "" }}>
+      Permitir que cada usuario elija modo claro/oscuro
+    </label>
+    <label class="toggle-row">
+      <input type="checkbox" name="dark_mode_default" {{ "checked" if brand.dark_mode_default else "" }}>
+      Modo oscuro por defecto para usuarios nuevos
+    </label>
+  </div>
+
+  <button class="btn" type="submit">Guardar cambios</button>
+</form>
+{% endblock %}

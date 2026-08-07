@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="UrraHosting Cloud">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e25822"/>
+      <stop offset="100%" stop-color="#ff4500"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="url(#g)"/>
+  <path d="M9 17c0-3.5 2.5-6 6-6 2.5 0 4.5 1.5 5.5 3.5 2.5.25 4.5 2.25 4.5 4.75 0 2.65-2.15 4.75-4.75 4.75H10.5c-2.2 0-4-1.8-4-4 0-1.8 1.2-3.3 2.85-3.8.05-.2.1-.45.15-.7Z" fill="#ffffff"/>
+</svg>

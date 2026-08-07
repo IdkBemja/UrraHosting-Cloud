@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Archivos - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="content-header"><h2>Archivos (todos los usuarios)</h2></div>
+
+<div class="card">
+  <form method="get" style="display:flex;gap:.75rem;flex-wrap:wrap;">
+    <input name="q" placeholder="Buscar por nombre" value="{{ query }}" style="flex:1;min-width:200px;">
+    <input name="owner" placeholder="Filtrar por usuario" value="{{ owner_filter }}" style="min-width:180px;">
+    <button class="btn ghost" type="submit">Filtrar</button>
+  </form>
+</div>
+
+<div class="card">
+  <table class="file-table">
+    <thead><tr><th>Nombre</th><th>Propietario</th><th>Tipo</th><th>Tamano</th><th>Creado</th><th></th></tr></thead>
+    <tbody>
+      {% for node in nodes %}
+      <tr>
+        <td>{{ "📁" if node.type == "folder" else "📄" }} {{ node.name or "(raiz)" }}</td>
+        <td class="muted">{{ node.owner.username }}</td>
+        <td>{{ node.type }}</td>
+        <td class="muted">{{ "%.1f KB"|format(node.size_bytes / 1024) if node.type == "file" else "-" }}</td>
+        <td class="muted">{{ node.created_at.strftime("%Y-%m-%d") }}</td>
+        <td class="row-actions">
+          <form method="post" action="{{ url_for('admin.delete_file', node_id=node.id) }}" data-confirm="Eliminar definitivamente? Esta accion no se puede deshacer.">
+            {% include "_csrf.html" %}
+            <button class="btn danger" type="submit">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="muted">Sin resultados</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="muted small">{{ total }} elemento(s) encontrados - pagina {{ page }}</p>
+</div>
+{% endblock %}
