@@ -134,6 +134,7 @@ services:
       <<: *instance-env
     volumes:
       - ${DATA_DIR}/files:/data/files
+      - ${DATA_DIR}/branding:/data/branding
     depends_on:
       db:
         condition: service_healthy
