@@ -98,6 +98,16 @@ def create_app() -> Flask:
     def healthz():
         return jsonify({"status": "ok"})
 
+    @app.route("/")
+    def index():
+        # No blueprint owns bare "/" (drive is mounted at /drive, auth at
+        # /login) - without this, visiting the instance's root domain 404s
+        # even though the app is healthy. drive.my_drive is @login_required,
+        # so this naturally bounces anonymous visitors to auth.login (via
+        # login_manager.login_view) and takes logged-in users straight to
+        # their drive root.
+        return redirect(url_for("drive.my_drive"))
+
     @app.before_request
     def sync_max_upload_from_instance_settings():
         # InstanceSettings.max_upload_mb is editable from the Admin Panel
