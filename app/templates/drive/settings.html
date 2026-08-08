@@ -48,7 +48,8 @@
   <h3>Conectar como unidad de red (WebDAV)</h3>
   <p class="muted">URL: <code>{{ webdav_url }}</code> — usuario: <code>{{ current_user.username }}</code>, contraseña: una "contraseña de aplicacion" de abajo (nunca tu contraseña principal).</p>
   <p class="muted small">
-    <strong>Windows</strong>: Explorador de archivos → "Agregar una ubicacion de red" → pega la URL.<br>
+    <strong>Windows</strong>: Explorador de archivos → clic derecho en "Este equipo" → "Conectar a unidad de red" → pega la URL, marca "Conectar con credenciales diferentes" e ingresa usuario y contraseña.
+    <em>No uses "Agregar una ubicacion de red": ese asistente falla con el error "el nombre de carpeta no parece valido" en este tipo de configuracion.</em><br>
     <strong>macOS</strong>: Finder → Ir → Conectar al servidor → pega la URL.<br>
     <strong>Linux</strong>: <code>davfs2</code> o el gestor de archivos (Nautilus/Dolphin) con "Conectar a servidor".
   </p>
