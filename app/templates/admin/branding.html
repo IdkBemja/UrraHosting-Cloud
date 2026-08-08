@@ -68,11 +68,11 @@
   <div class="card">
     <h3>Modo oscuro</h3>
     <label class="toggle-row">
-      <input type="checkbox" name="supports_dark_mode" {{ "checked" if brand.supports_dark_mode else "" }}>
+      <input type="checkbox" class="darkmode-options" name="supports_dark_mode" {{ "checked" if brand.supports_dark_mode else "" }}>
       Permitir que cada usuario elija modo claro/oscuro
     </label>
     <label class="toggle-row">
-      <input type="checkbox" name="dark_mode_default" {{ "checked" if brand.dark_mode_default else "" }}>
+      <input type="checkbox" class="darkmode-options" name="dark_mode_default" {{ "checked" if brand.dark_mode_default else "" }}>
       Modo oscuro por defecto para usuarios nuevos
     </label>
   </div>
