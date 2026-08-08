@@ -148,7 +148,7 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
 .field-min-180 { min-width: 180px; }
 .input-sm { min-height: 38px; }
 .mono-field { font-family: monospace; }
-.darkmode-options { width: 0 !important; min-height: 0 !important }
+.darkmode-options { width: auto !important; min-height: auto !important }
 
 
 .card {
