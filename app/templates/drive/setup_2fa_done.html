@@ -2,11 +2,11 @@
 {% block title %}2FA activado - {{ app_name }}{% endblock %}
 {% block content %}
 <div class="content-header"><h2>Verificacion en dos pasos activada</h2></div>
-<div class="card" style="max-width:480px;">
+<div class="card card-narrow">
   <div class="alert success">2FA activado correctamente.</div>
   <h3>Codigos de recuperacion</h3>
   <p class="muted small">Guarda estos codigos en un lugar seguro. Cada uno sirve una sola vez y te permiten entrar si pierdes tu dispositivo de 2FA. No se volveran a mostrar.</p>
-  <pre style="background:var(--canvas);padding:1rem;border-radius:9px;">{% for code in recovery_codes %}{{ code }}
+  <pre class="recovery-codes">{% for code in recovery_codes %}{{ code }}
 {% endfor %}</pre>
   <a class="btn" href="{{ url_for('drive.settings') }}">Listo</a>
 </div>

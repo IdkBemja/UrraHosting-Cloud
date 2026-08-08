@@ -33,7 +33,7 @@ def create_user():
     if role not in ("admin", "member"):
         role = "member"  # only an existing owner can be promoted to owner, never via this form
     if len(password) < _MIN_PASSWORD_LENGTH:
-        flash(f"La contrasena debe tener al menos {_MIN_PASSWORD_LENGTH} caracteres", "error")
+        flash(f"La contraseña debe tener al menos {_MIN_PASSWORD_LENGTH} caracteres", "error")
         return redirect(url_for("admin.list_users"))
     if User.query.filter((User.email == email) | (User.username == username)).first():
         flash("Ya existe un usuario con ese email o nombre de usuario", "error")

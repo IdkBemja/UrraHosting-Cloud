@@ -53,7 +53,7 @@ def confirm_2fa():
 def disable_2fa():
     password = request.form.get("password", "")
     if not bcrypt.check_password_hash(current_user.password_hash, password):
-        flash("Contrasena incorrecta", "error")
+        flash("Contraseña incorrecta", "error")
         return redirect(url_for("drive.settings"))
 
     current_user.totp_secret = None

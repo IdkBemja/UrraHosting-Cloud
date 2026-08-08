@@ -127,12 +127,28 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
 .sidebar nav a:hover { background: rgba(255,255,255,.08); color: #fff; }
 .sidebar nav a.active { background: var(--primary); color: #fff; }
 .sidebar .spacer { flex: 1; }
+.nav-section-label { margin-top: 1rem; padding: 0 .7rem; }
+.search-form { padding: 0 .3rem; }
+.search-form input { min-height: 36px; }
+.btn-block { width: 100%; }
 
-.content { padding: 1.75rem 2rem; max-width: 1100px; }
+.content { padding: 1.75rem 2rem; }
 .content-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; gap: 1rem; flex-wrap: wrap; }
 .breadcrumbs { display: flex; gap: .35rem; align-items: center; color: var(--muted); font-size: .9rem; flex-wrap: wrap; }
 .breadcrumbs a { color: var(--muted); text-decoration: none; }
 .breadcrumbs a:hover { color: var(--primary); }
+.form-top { display:flex;gap:.5rem; }
+.form-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;align-items:end; }
+.form-files { display:flex;gap:.75rem;flex-wrap:wrap;}
+.form-inline { display: flex; gap: .5rem; align-items: end; }
+.form-inline-tight { display: flex; gap: .5rem; margin-bottom: 1rem; }
+.form-wrap { display: flex; gap: .75rem; align-items: end; flex-wrap: wrap; }
+.field-grow { flex: 1; }
+.field-grow-wide { flex: 1; min-width: 200px; }
+.field-min-180 { min-width: 180px; }
+.input-sm { min-height: 38px; }
+.mono-field { font-family: monospace; }
+
 
 .card {
   background: var(--panel);
@@ -142,9 +158,17 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   padding: 1.25rem 1.4rem;
   margin-bottom: 1.25rem;
 }
+.card-highlight { border-color: var(--primary); }
+.card-narrow { max-width: 480px; }
 .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
 .stat-card { text-align: left; }
 .stat-card .value { font-size: 1.7rem; font-weight: 800; }
+.stat-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: .75rem; }
+
+.editor-frame { height: 80vh; border: 1px solid var(--line); border-radius: 9px; }
+.qr-code { width: 220px; height: 220px; }
+.recovery-codes { background: var(--canvas); padding: 1rem; border-radius: 9px; }
+.file-picker-label { display: inline-flex; cursor: pointer; }
 
 .file-table { width: 100%; border-collapse: collapse; }
 .file-table th, .file-table td { text-align: left; padding: .6rem .5rem; border-bottom: 1px solid var(--line); font-size: .92rem; }
@@ -171,8 +195,19 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
 .preset-option { border: 2px solid var(--line); border-radius: 12px; padding: .75rem; cursor: pointer; }
 .preset-option.selected { border-color: var(--primary); }
 .preset-swatch { height: 36px; border-radius: 8px; margin-bottom: .5rem; }
+.custom-colors-panel { margin-top: 1rem; }
+
+.branding-row { display: flex; gap: 2rem; flex-wrap: wrap; }
+.branding-preview { width: 64px; height: 64px; border-radius: 12px; margin: .4rem 0; }
+.branding-preview.small { width: 32px; height: 32px; border-radius: 8px; }
 
 .toggle-row { display: flex; align-items: center; gap: .6rem; margin: .5rem 0; }
+
+/* Public share page (app/templates/public/browse.html) - not app-shell,
+   so these aren't scoped under .sidebar/.content like the rest above. */
+.public-shell { max-width: 900px; margin: 2rem auto; padding: 0 1.25rem; }
+.public-header { display: flex; align-items: center; gap: .6rem; margin-bottom: 1.5rem; }
+.public-logo { width: 32px; height: 32px; border-radius: 8px; }
 
 @media (max-width: 860px) {
   .app-shell { grid-template-columns: 1fr; }

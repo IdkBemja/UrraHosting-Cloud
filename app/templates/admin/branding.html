@@ -11,7 +11,7 @@
   <div class="card">
     <h3>Nombre de la aplicacion</h3>
     <input name="app_name" value="{{ brand.app_name }}" maxlength="120" placeholder="UrraHosting Cloud">
-    <p class="muted small">Se muestra en el sidebar, la pestana del navegador y la pantalla de inicio de sesion.</p>
+    <p class="muted small">Se muestra en el sidebar, la pestana del navegador y la pantalla de inicio de sesión.</p>
   </div>
 
   <div class="card">
@@ -20,10 +20,10 @@
       Si no subes uno propio, se usa el logo/favicon por defecto de UrraHosting
       (nunca queda la instancia sin marca visual).
     </p>
-    <div style="display:flex;gap:2rem;flex-wrap:wrap;">
+    <div class="branding-row">
       <div>
         <label>Logo actual</label><br>
-        <img src="{{ logo_url }}" alt="logo" style="width:64px;height:64px;border-radius:12px;margin:.4rem 0;">
+        <img src="{{ logo_url }}" alt="logo" class="branding-preview">
         <input type="file" name="logo" accept=".svg,.png,.webp">
         {% if brand.logo_url %}
         <label class="toggle-row"><input type="checkbox" name="reset_logo"> Volver al logo por defecto</label>
@@ -31,7 +31,7 @@
       </div>
       <div>
         <label>Favicon actual</label><br>
-        <img src="{{ favicon_url }}" alt="favicon" style="width:32px;height:32px;border-radius:8px;margin:.4rem 0;">
+        <img src="{{ favicon_url }}" alt="favicon" class="branding-preview small">
         <input type="file" name="favicon" accept=".svg,.png,.webp">
         {% if brand.favicon_url %}
         <label class="toggle-row"><input type="checkbox" name="reset_favicon"> Volver al favicon por defecto</label>
@@ -45,16 +45,16 @@
     <div class="preset-grid">
       {% for key, preset in presets.items() %}
       <label class="preset-option" :class="preset === '{{ key }}' ? 'selected' : ''">
-        <input type="radio" name="theme_preset" value="{{ key }}" x-model="preset" style="display:none;">
+        <input type="radio" name="theme_preset" value="{{ key }}" x-model="preset" class="is-hidden">
         {% if key != 'custom' %}
-        <div class="preset-swatch" style="background:linear-gradient(135deg, {{ preset.primary }}, {{ preset.secondary }});"></div>
+        <div class="preset-swatch" :style="{ background: 'linear-gradient(135deg, {{ preset.primary }}, {{ preset.secondary }})' }"></div>
         {% endif %}
         {{ preset.label }}
       </label>
       {% endfor %}
     </div>
 
-    <div x-show="preset === 'custom'" style="margin-top:1rem;">
+    <div x-show="preset === 'custom'" class="custom-colors-panel">
       <div class="color-swatch-row">
         <div class="color-field"><label>Primario</label><input type="color" name="primary" value="{{ brand.primary }}"></div>
         <div class="color-field"><label>Secundario</label><input type="color" name="secondary" value="{{ brand.secondary }}"></div>

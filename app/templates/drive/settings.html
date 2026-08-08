@@ -4,10 +4,10 @@
 <div class="content-header"><h2>Ajustes</h2></div>
 
 {% if new_password %}
-<div class="card" style="border-color:var(--primary);">
-  <h3>Contrasena de aplicacion creada: "{{ new_password_label }}"</h3>
-  <p class="muted">Copiala ahora - no se puede volver a mostrar. Usala (con tu usuario, <strong>{{ current_user.username }}</strong>) para conectar clientes WebDAV/sync, nunca tu contrasena principal.</p>
-  <input readonly value="{{ new_password }}" onclick="this.select()" style="font-family:monospace;">
+<div class="card card-highlight">
+  <h3>Contraseña de aplicacion creada: "{{ new_password_label }}"</h3>
+  <p class="muted">Copiala ahora - no se puede volver a mostrar. Usala (con tu usuario, <strong>{{ current_user.username }}</strong>) para conectar clientes WebDAV/sync, nunca tu contraseña principal.</p>
+  <input readonly value="{{ new_password }}" onclick="this.select()" class="mono-field">
 </div>
 {% endif %}
 
@@ -15,10 +15,10 @@
   <h3>Verificacion en dos pasos (2FA)</h3>
   {% if current_user.totp_enabled %}
   <p class="muted small">2FA esta activado en tu cuenta.</p>
-  <form method="post" action="{{ url_for('drive.disable_2fa') }}" style="display:flex;gap:.5rem;align-items:end;">
+  <form method="post" action="{{ url_for('drive.disable_2fa') }}" class="form-inline">
     {% include "_csrf.html" %}
-    <div style="flex:1;">
-      <label for="password2fa">Contrasena (para confirmar)</label>
+    <div class="field-grow">
+      <label for="password2fa">Contraseña (para confirmar)</label>
       <input id="password2fa" name="password" type="password" required>
     </div>
     <button class="btn danger" type="submit">Desactivar 2FA</button>
@@ -32,10 +32,10 @@
 {% if brand.supports_dark_mode %}
 <div class="card">
   <h3>Tema</h3>
-  <form method="post" action="{{ url_for('drive.update_theme') }}" style="display:flex;gap:.5rem;align-items:end;">
+  <form method="post" action="{{ url_for('drive.update_theme') }}" class="form-inline">
     {% include "_csrf.html" %}
     <select name="theme_mode">
-      <option value="system" {{ "selected" if current_user.theme_mode == "system" else "" }}>Segun el sistema</option>
+      <option value="system" {{ "selected" if current_user.theme_mode == "system" else "" }}>Según el sistema</option>
       <option value="light" {{ "selected" if current_user.theme_mode == "light" else "" }}>Claro</option>
       <option value="dark" {{ "selected" if current_user.theme_mode == "dark" else "" }}>Oscuro</option>
     </select>
@@ -46,15 +46,15 @@
 
 <div class="card">
   <h3>Conectar como unidad de red (WebDAV)</h3>
-  <p class="muted">URL: <code>{{ webdav_url }}</code> — usuario: <code>{{ current_user.username }}</code>, contrasena: una "contrasena de aplicacion" de abajo (nunca tu contrasena principal).</p>
+  <p class="muted">URL: <code>{{ webdav_url }}</code> — usuario: <code>{{ current_user.username }}</code>, contraseña: una "contraseña de aplicacion" de abajo (nunca tu contraseña principal).</p>
   <p class="muted small">
     <strong>Windows</strong>: Explorador de archivos → "Agregar una ubicacion de red" → pega la URL.<br>
     <strong>macOS</strong>: Finder → Ir → Conectar al servidor → pega la URL.<br>
     <strong>Linux</strong>: <code>davfs2</code> o el gestor de archivos (Nautilus/Dolphin) con "Conectar a servidor".
   </p>
 
-  <h4>Contrasenas de aplicacion</h4>
-  <form method="post" action="{{ url_for('drive.create_app_password') }}" style="display:flex;gap:.5rem;margin-bottom:1rem;">
+  <h4>Contraseñas de aplicacion</h4>
+  <form method="post" action="{{ url_for('drive.create_app_password') }}" class="form-inline-tight">
     {% include "_csrf.html" %}
     <input name="label" placeholder="Ej: PC de la oficina" required>
     <button class="btn ghost" type="submit">Crear</button>
@@ -75,7 +75,7 @@
         </td>
       </tr>
       {% else %}
-      <tr><td colspan="4" class="muted">Sin contrasenas de aplicacion todavia</td></tr>
+      <tr><td colspan="4" class="muted">Sin contraseñas de aplicacion todavia</td></tr>
       {% endfor %}
     </tbody>
   </table>

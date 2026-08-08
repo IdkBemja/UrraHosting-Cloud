@@ -7,7 +7,7 @@
   {% include "_csrf.html" %}
   <div class="card">
     <h3>Cuotas</h3>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem;">
+    <div class="stat-columns">
       <div>
         <label for="total_quota_gb">Cuota total de la instancia (GB)</label>
         <input id="total_quota_gb" name="total_quota_gb" type="number" min="1" value="{{ settings.total_quota_bytes // (1024**3) }}">
@@ -25,7 +25,7 @@
 
   <div class="card">
     <h3>Politica de retencion</h3>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem;">
+    <div class="stat-columns">
       <div>
         <label for="trash_retention_days">Papelera: dias antes de purgar</label>
         <input id="trash_retention_days" name="trash_retention_days" type="number" min="1" value="{{ settings.trash_retention_days }}">

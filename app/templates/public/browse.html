@@ -9,9 +9,9 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
 </head>
 <body>
-  <div style="max-width:900px;margin:2rem auto;padding:0 1.25rem;">
-    <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1.5rem;">
-      <img src="{{ logo_url }}" alt="{{ app_name }}" style="width:32px;height:32px;border-radius:8px;">
+  <div class="public-shell">
+    <div class="public-header">
+      <img src="{{ logo_url }}" alt="{{ app_name }}" class="public-logo">
       <strong>{{ app_name }}</strong>
     </div>
     <div class="card">

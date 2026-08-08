@@ -7,7 +7,7 @@
 
 <div class="card">
   <h3>Crear link publico</h3>
-  <form method="post" action="{{ url_for('drive.create_link', node_id=node.id) }}" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;align-items:end;">
+  <form method="post" action="{{ url_for('drive.create_link', node_id=node.id) }}" class="form-grid">
     {% include "_csrf.html" %}
     <div>
       <label for="permission">Permiso</label>
@@ -17,8 +17,8 @@
       </select>
     </div>
     <div>
-      <label for="password">Contrasena (opcional)</label>
-      <input id="password" name="password" type="password" placeholder="Sin contrasena">
+      <label for="password">Contraseña (opcional)</label>
+      <input id="password" name="password" type="password" placeholder="Sin contraseña">
     </div>
     <div>
       <label for="expires_in_days">Expira en (dias, opcional)</label>
@@ -32,9 +32,9 @@
 
 <div class="card">
   <h3>Compartir con un usuario</h3>
-  <form method="post" action="{{ url_for('drive.create_with_user', node_id=node.id) }}" style="display:flex;gap:.75rem;align-items:end;flex-wrap:wrap;">
+  <form method="post" action="{{ url_for('drive.create_with_user', node_id=node.id) }}" class="form-wrap">
     {% include "_csrf.html" %}
-    <div style="flex:1;min-width:200px;">
+    <div class="field-grow-wide">
       <label for="username">Usuario o email</label>
       <input id="username" name="username" required>
     </div>

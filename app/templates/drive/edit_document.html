@@ -3,7 +3,7 @@
 {% block content %}
 <div class="content-header"><h2>Editando "{{ node.name }}"</h2></div>
 <script type="application/json" id="editor-config">{{ editor_config|tojson }}</script>
-<div id="editor-placeholder" style="height:80vh;border:1px solid var(--line);border-radius:9px;"></div>
+<div id="editor-placeholder" class="editor-frame"></div>
 <script src="{{ onlyoffice_server_url }}/web-apps/apps/api/documents/api.js"></script>
 <script src="{{ url_for('static', filename='js/onlyoffice-init.js') }}"></script>
 {% endblock %}

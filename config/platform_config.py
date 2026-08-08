@@ -15,7 +15,7 @@ from pathlib import Path
 
 _KNOWN_PLACEHOLDER_SECRETS = frozenset(
     {
-        "cambia-esta-contrasena-unica",
+        "cambia-esta-contraseña-unica",
         "cambia-este-secreto-largo-y-aleatorio-64-hex",
         "cambia-este-token-largo-y-aleatorio-64-hex",
         "cambia-esta-password-db",
@@ -176,7 +176,7 @@ def load_from_environ(environ: dict) -> tuple[PlatformConfig | None, ValidationR
     trusted_proxy_count = _require_int(environ, "TRUSTED_PROXY_COUNT", [], minimum=0) or 1
     session_cookie_secure = _bool(environ, "SESSION_COOKIE_SECURE", True)
     if not session_cookie_secure:
-        result.warnings.append("SESSION_COOKIE_SECURE=false expone la cookie de sesion sin HTTPS; solo usar en desarrollo local")
+        result.warnings.append("SESSION_COOKIE_SECURE=false expone la cookie de sesión sin HTTPS; solo usar en desarrollo local")
 
     debug = _bool(environ, "DEBUG", False)
     if debug:

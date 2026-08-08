@@ -26,7 +26,7 @@
         <a href="{{ url_for('drive.trash') }}" class="{{ 'active' if request.endpoint == 'drive.trash' else '' }}">Papelera</a>
         <a href="{{ url_for('drive.settings') }}" class="{{ 'active' if request.endpoint and request.endpoint.startswith('drive.settings') else '' }}">Ajustes</a>
         {% if current_user.is_authenticated and current_user.is_admin %}
-        <div class="muted small" style="margin-top:1rem;padding:0 .7rem;">Administracion</div>
+        <div class="muted small nav-section-label">Administracion</div>
         <a href="{{ url_for('admin.index') }}" class="{{ 'active' if request.endpoint == 'admin.index' else '' }}">Resumen</a>
         <a href="{{ url_for('admin.list_users') }}" class="{{ 'active' if request.endpoint == 'admin.list_users' else '' }}">Usuarios</a>
         <a href="{{ url_for('admin.list_files') }}" class="{{ 'active' if request.endpoint == 'admin.list_files' else '' }}">Archivos</a>
@@ -37,13 +37,13 @@
         {% endif %}
         {% endif %}
       </nav>
-      <form action="{{ url_for('drive.search') }}" method="get" style="padding:0 .3rem;">
-        <input name="q" placeholder="Buscar en mi unidad..." value="{{ request.args.get('q', '') }}" style="min-height:36px;">
+      <form action="{{ url_for('drive.search') }}" method="get" class="search-form">
+        <input name="q" placeholder="Buscar en mi unidad..." value="{{ request.args.get('q', '') }}">
       </form>
       <div class="spacer"></div>
       {% if current_user.is_authenticated %}
       <form action="{{ url_for('auth.logout') }}" method="post">
-        <button class="btn ghost" type="submit" style="width:100%;">Cerrar sesion ({{ current_user.username }})</button>
+        <button class="btn ghost btn-block" type="submit">Cerrar sesión ({{ current_user.username }})</button>
       </form>
       {% endif %}
     </aside>

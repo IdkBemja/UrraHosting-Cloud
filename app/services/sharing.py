@@ -1,4 +1,4 @@
-"""Sharing (plan.md section 5.2): link publico (con/sin contrasena, con/sin
+"""Sharing (plan.md section 5.2): link publico (con/sin contraseña, con/sin
 expiracion) y compartir con un usuario especifico. Una compartición en un
 nodo carpeta se hereda a todos sus descendientes (igual que Drive/Nextcloud)
 - `find_governing_share` camina hacia arriba por `parent_id` hasta encontrar

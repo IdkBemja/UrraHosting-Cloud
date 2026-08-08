@@ -4,9 +4,9 @@
 <div class="content-header"><h2>Archivos (todos los usuarios)</h2></div>
 
 <div class="card">
-  <form method="get" style="display:flex;gap:.75rem;flex-wrap:wrap;">
-    <input name="q" placeholder="Buscar por nombre" value="{{ query }}" style="flex:1;min-width:200px;">
-    <input name="owner" placeholder="Filtrar por usuario" value="{{ owner_filter }}" style="min-width:180px;">
+  <form class="form-files" method="get">
+    <input name="q" placeholder="Buscar por nombre" value="{{ query }}" class="field-grow-wide">
+    <input name="owner" placeholder="Filtrar por usuario" value="{{ owner_filter }}" class="field-min-180">
     <button class="btn ghost" type="submit">Filtrar</button>
   </form>
 </div>

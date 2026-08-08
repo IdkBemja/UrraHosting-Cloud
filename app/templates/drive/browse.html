@@ -9,9 +9,9 @@
       <a href="{{ url_for('drive.browse', node_id=crumb.id) }}">{{ crumb.name }}</a>
     {% endfor %}
   </div>
-  <form method="post" action="{{ url_for('drive.mkdir', node_id=folder.id) }}" style="display:flex;gap:.5rem;">
+  <form method="post" class="form-top" action="{{ url_for('drive.mkdir', node_id=folder.id) }}">
     {% include "_csrf.html" %}
-    <input name="name" placeholder="Nueva carpeta" required style="min-height:38px;">
+    <input name="name" placeholder="Nueva carpeta" required class="input-sm">
     <button class="btn ghost" type="submit">+ Carpeta</button>
   </form>
 </div>
@@ -23,9 +23,9 @@
        @drop.prevent="over = false; $refs.fileInput.files = $event.dataTransfer.files; $refs.fileInput.dispatchEvent(new Event('change'))"
        :class="over ? 'is-dragover' : ''">
     Arrastra un archivo aqui, o
-    <label class="btn ghost" style="display:inline-flex;cursor:pointer;">
+    <label class="btn ghost file-picker-label">
       elige un archivo
-      <input x-ref="fileInput" type="file" name="file" style="display:none;">
+      <input x-ref="fileInput" type="file" name="file" class="is-hidden">
     </label>
   </div>
 </form>

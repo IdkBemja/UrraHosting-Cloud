@@ -2,13 +2,13 @@
 {% block title %}Configurar 2FA - {{ app_name }}{% endblock %}
 {% block content %}
 <div class="content-header"><h2>Configurar verificacion en dos pasos</h2></div>
-<div class="card" style="max-width:480px;">
+<div class="card card-narrow">
   <p>1. Escanea este codigo con Google Authenticator, Authy o similar:</p>
-  <img src="{{ qr_data_uri }}" alt="Codigo QR" style="width:220px;height:220px;">
+  <img src="{{ qr_data_uri }}" alt="Codigo QR" class="qr-code">
   <p class="muted small">O ingresa la clave manualmente: <code>{{ secret }}</code></p>
 
   <p>2. Ingresa el codigo de 6 digitos que genera tu app:</p>
-  <form method="post" action="{{ url_for('drive.confirm_2fa') }}" style="display:flex;gap:.5rem;">
+  <form method="post" action="{{ url_for('drive.confirm_2fa') }}" class="form-inline">
     {% include "_csrf.html" %}
     <input name="code" placeholder="123456" inputmode="numeric" pattern="[0-9]{6}" required autofocus>
     <button class="btn" type="submit">Activar</button>
