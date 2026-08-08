@@ -43,7 +43,7 @@ def _hash_and_buffer(stream: BinaryIO, max_bytes: int) -> tuple[tempfile.Spooled
         written += len(chunk)
         if written > max_bytes:
             buffer.close()
-            raise StorageError("El archivo excede el tamano maximo permitido")
+            raise StorageError("El archivo excede el tamaño maximo permitido")
         digest.update(chunk)
         buffer.write(chunk)
     buffer.seek(0)

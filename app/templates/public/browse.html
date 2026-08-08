@@ -17,7 +17,7 @@
     <div class="card">
       <h2>📁 {{ folder.name or "Elemento compartido" }} <span class="muted small">({{ permission }})</span></h2>
       <table class="file-table">
-        <thead><tr><th>Nombre</th><th>Tamano</th></tr></thead>
+        <thead><tr><th>Nombre</th><th>Tamaño</th></tr></thead>
         <tbody>
           {% for node in children %}
           <tr>
@@ -35,6 +35,7 @@
         </tbody>
       </table>
     </div>
+    <footer class="app-footer">&copy; {{ current_year }} UrraHosting. Todos los derechos reservados.</footer>
   </div>
 </body>
 </html>

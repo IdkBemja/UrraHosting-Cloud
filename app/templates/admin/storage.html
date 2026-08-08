@@ -17,7 +17,7 @@
         <input id="default_user_quota_gb" name="default_user_quota_gb" type="number" min="1" value="{{ settings.default_user_quota_bytes // (1024**3) }}">
       </div>
       <div>
-        <label for="max_upload_mb">Tamano maximo de subida (MB)</label>
+        <label for="max_upload_mb">Tamaño maximo de subida (MB)</label>
         <input id="max_upload_mb" name="max_upload_mb" type="number" min="1" value="{{ settings.max_upload_mb }}">
       </div>
     </div>
@@ -46,7 +46,7 @@
   <div class="card">
     <h3>Seguridad</h3>
     <label class="toggle-row">
-      <input type="checkbox" name="enforce_2fa_for_admins" {{ "checked" if settings.enforce_2fa_for_admins else "" }}>
+      <input type="checkbox" class="darkmode-options" name="enforce_2fa_for_admins" {{ "checked" if settings.enforce_2fa_for_admins else "" }}>
       Forzar verificacion en dos pasos (2FA) para todas las cuentas admin/owner
     </label>
     <p class="muted small">Si se activa, cualquier admin/owner sin 2FA configurado sera redirigido a configurarlo antes de poder usar el resto del panel.</p>

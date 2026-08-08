@@ -55,7 +55,7 @@ def _write_atomic(dir_fd: int, final_name: str, stream: BinaryIO, max_bytes: int
                     break
                 written += len(chunk)
                 if written > max_bytes:
-                    raise StorageError("El archivo excede el tamano maximo permitido")
+                    raise StorageError("El archivo excede el tamaño maximo permitido")
                 digest.update(chunk)
                 handle.write(chunk)
     except Exception:

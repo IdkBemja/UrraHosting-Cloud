@@ -99,6 +99,13 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
 .auth-form { display: grid; gap: .7rem; text-align: left; }
 .login-btn { width: 100%; margin-top: .25rem; }
 
+/* App footer/attribution - deliberately NOT branded via {{ app_name }}/
+   theme (that's the tenant's own customizable identity, set in Admin
+   Panel > Marca): this always names UrraHosting as the software's
+   creator regardless of how a client re-brands their instance. */
+.app-footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line); text-align: center; color: var(--muted); font-size: .8rem; }
+.auth-card .app-footer { margin-top: 1.5rem; }
+
 /* App shell (sidebar + content) */
 .app-shell { display: grid; grid-template-columns: 264px 1fr; min-height: 100vh; }
 .sidebar {
