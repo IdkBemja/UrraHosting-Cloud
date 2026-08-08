@@ -210,6 +210,18 @@ class CloudFolderResource(DAVCollection):
     def get_last_modified(self):
         return self.node.updated_at.timestamp()
 
+    def get_used_bytes(self) -> int | None:
+        # RFC 4331 quota-used-bytes/quota-available-bytes - this is what
+        # Windows Explorer's "X GB free of Y GB" gauge reads for a mapped
+        # WebDAV drive. Reused from the same per-user accounting the Drive
+        # App and quota checks use (app/services/quota.py), not disk usage
+        # of the underlying container - the instance's own filesystem free
+        # space is irrelevant to a tenant's plan quota.
+        return self.node.owner.storage_used_bytes
+
+    def get_available_bytes(self) -> int | None:
+        return self.node.owner.storage_available_bytes
+
     def get_member_names(self):
         children = Node.query.filter_by(parent_id=self.node.id, is_trashed=False).all()
         return [child.name for child in children]
