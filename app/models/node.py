@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Index, String
+from sqlalchemy import Boolean, Computed, DateTime, Enum, ForeignKey, Index, String
 from sqlalchemy.dialects.postgresql import TSVECTOR, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -74,14 +74,14 @@ class Node(db.Model):
     )
     # Postgres STORED generated column (migrations/versions/0002_search_vector.py)
     # - recomputed by Postgres itself from `name` on every write, never
-    # assigned from Python. Mapped read-only: SQLAlchemy only includes a
-    # column in INSERT/UPDATE when the app explicitly sets it, so leaving
-    # this alone here is enough to avoid fighting the DB-generated value.
-    # No `default=`/`insert_default=` here on purpose: either would make
-    # SQLAlchemy include this column in the INSERT statement (even as
-    # NULL), which Postgres rejects for a GENERATED ALWAYS column. Leaving
-    # it fully unset is what lets Postgres compute it server-side.
-    search_vector: Mapped[str | None] = mapped_column(TSVECTOR, nullable=True)
+    # assigned from Python. `Computed(...)` must mirror the migration's
+    # expression exactly: it's what tells SQLAlchemy to omit this column
+    # from INSERT/UPDATE entirely. Without it, SQLAlchemy still sends an
+    # explicit NULL for any unset nullable column with no Python-side
+    # default, which Postgres rejects for a GENERATED ALWAYS column.
+    search_vector: Mapped[str | None] = mapped_column(
+        TSVECTOR, Computed("to_tsvector('simple', coalesce(name, ''))", persisted=True), nullable=True
+    )
 
     owner: Mapped["User"] = relationship(back_populates="nodes", foreign_keys=[owner_id])
     parent: Mapped["Node | None"] = relationship(remote_side=[id], back_populates="children")
