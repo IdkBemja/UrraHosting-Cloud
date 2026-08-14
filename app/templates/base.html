@@ -42,6 +42,11 @@
       </form>
       <div class="spacer"></div>
       {% if current_user.is_authenticated %}
+      {% set storage_pct = (current_user.storage_used_bytes / current_user.quota_bytes * 100) %}
+      <div class="storage-meter" title="El indicador de espacio de Windows en la unidad de red puede no coincidir - esta cifra es la real.">
+        {{ (current_user.storage_used_bytes / 1024**3) | round(1) }} GB de {{ (current_user.quota_bytes / 1024**3) | round(1) }} GB usados
+        <div class="track"><div class="fill{{ ' danger' if storage_pct >= 95 else (' warn' if storage_pct >= 80 else '') }}" style="width: {{ [storage_pct, 100] | min }}%"></div></div>
+      </div>
       <form action="{{ url_for('auth.logout') }}" method="post">
         <button class="btn ghost btn-block" type="submit">Cerrar sesión ({{ current_user.username }})</button>
       </form>

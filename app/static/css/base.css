@@ -134,6 +134,11 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
 .sidebar nav a:hover { background: rgba(255,255,255,.08); color: #fff; }
 .sidebar nav a.active { background: var(--primary); color: #fff; }
 .sidebar .spacer { flex: 1; }
+.storage-meter { padding: 0 .7rem; font-size: .78rem; color: rgba(255,255,255,.7); }
+.storage-meter .track { height: 6px; border-radius: 999px; background: rgba(255,255,255,.15); overflow: hidden; margin-top: .35rem; }
+.storage-meter .fill { height: 100%; background: var(--primary); border-radius: 999px; }
+.storage-meter .fill.warn { background: #e0a531; }
+.storage-meter .fill.danger { background: #e05a4e; }
 .nav-section-label { margin-top: 1rem; padding: 0 .7rem; }
 .search-form { padding: 0 .3rem; }
 .search-form input { min-height: 36px; }

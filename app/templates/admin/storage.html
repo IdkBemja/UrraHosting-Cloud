@@ -11,14 +11,14 @@
       <div>
         <label>Cuota total de la instancia</label>
         <p class="mono-field">{{ settings.total_quota_bytes // (1024**3) }} GB</p>
-        <p class="muted small">Asignada por la plataforma de hosting (INSTANCE_STORAGE_GB) - no editable desde aqui.</p>
+        <p class="muted small">Asignada por la plataforma según tu plan de hosting. para aumentar la cuota, upgradea tu plan.</p>
       </div>
       <div>
         <label for="default_user_quota_gb">Cuota por defecto de usuarios nuevos (GB)</label>
         <input id="default_user_quota_gb" name="default_user_quota_gb" type="number" min="1" value="{{ settings.default_user_quota_bytes // (1024**3) }}">
       </div>
       <div>
-        <label for="max_upload_mb">Tamaño maximo de subida (MB)</label>
+        <label for="max_upload_mb">Tamaño máximo de subida (MB)</label>
         <input id="max_upload_mb" name="max_upload_mb" type="number" min="1" value="{{ settings.max_upload_mb }}">
       </div>
     </div>
