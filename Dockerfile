@@ -29,4 +29,4 @@ USER cloud
 #   app    -> gunicorn app.main:app
 #   webdav -> gunicorn app.webdav_app:app
 #   worker -> python -m app.worker.worker_main
-CMD ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${APP_PORT:-5000} --workers 1 --threads 8 --timeout 1900 app.main:app"]
+CMD ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${APP_PORT:-5000} --workers 1 --worker-class gthread --threads 8 --timeout 1900 app.main:app"]

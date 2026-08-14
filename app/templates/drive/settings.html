@@ -49,7 +49,8 @@
   <p class="muted">URL: <code>{{ webdav_url }}</code> — usuario: <code>{{ current_user.username }}</code>, contraseña: una "contraseña de aplicacion" de abajo (nunca tu contraseña principal).</p>
   <p class="muted small">
     <strong>Windows</strong>: Explorador de archivos → clic derecho en "Este equipo" → "Conectar a unidad de red" → pega la URL, marca "Conectar con credenciales diferentes" e ingresa usuario y contraseña.
-    <em>No uses "Agregar una ubicacion de red": ese asistente falla con el error "el nombre de carpeta no parece valido" en este tipo de configuracion.</em><br>
+    <em>No uses "Agregar una ubicacion de red": ese asistente falla con el error "el nombre de carpeta no parece valido" en este tipo de configuracion.</em>
+    <em>Si un primer intento falla con el error <strong>0x80070043 "no se encuentra el nombre de red"</strong>, Windows recuerda ese fallo y lo repetira aunque el problema ya este resuelto: reinicia el servicio WebClient (<code>net stop webclient &amp;&amp; net start webclient</code> en un simbolo del sistema como administrador) o reinicia el equipo antes de volver a intentarlo.</em><br>
     <strong>macOS</strong>: Finder → Ir → Conectar al servidor → pega la URL.<br>
     <strong>Linux</strong>: <code>davfs2</code> o el gestor de archivos (Nautilus/Dolphin) con "Conectar a servidor".
   </p>

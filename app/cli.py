@@ -26,18 +26,26 @@ def _run_alembic_upgrade() -> None:
 
 
 def _seed_instance_settings(app) -> None:
-    if db.session.query(InstanceSettings).first() is not None:
-        return
     config = app.config["INSTANCE"]
-    db.session.add(
-        InstanceSettings(
-            total_quota_bytes=config.instance_storage_gb * 1024**3,
-            default_user_quota_bytes=config.default_user_quota_gb * 1024**3,
-            max_upload_mb=config.max_upload_mb,
-            trash_retention_days=config.trash_retention_days,
-            version_retention_count=config.version_retention_count,
+    settings = db.session.query(InstanceSettings).first()
+    if settings is None:
+        db.session.add(
+            InstanceSettings(
+                total_quota_bytes=config.instance_storage_gb * 1024**3,
+                default_user_quota_bytes=config.default_user_quota_gb * 1024**3,
+                max_upload_mb=config.max_upload_mb,
+                trash_retention_days=config.trash_retention_days,
+                version_retention_count=config.version_retention_count,
+            )
         )
-    )
+    else:
+        # total_quota_bytes is provisioned externally by the hosting
+        # Dashboard via INSTANCE_STORAGE_GB (.env/compose.yml) - always
+        # resynced on boot so a plan change + redeploy takes effect, and
+        # deliberately NOT exposed as editable in /admin/storage (unlike
+        # the fields below, which are meant to be admin-tunable without a
+        # redeploy).
+        settings.total_quota_bytes = config.instance_storage_gb * 1024**3
     db.session.commit()
 
 
@@ -51,7 +59,10 @@ def _seed_owner(app) -> None:
         username=config.app_user.split("@")[0][:64],
         password_hash=bcrypt.generate_password_hash(config.app_password).decode("utf-8"),
         role="owner",
-        quota_bytes=settings.total_quota_bytes,
+        # The per-user quota, same as every other account (admin/users.py)
+        # - NOT the instance's total raw capacity, which is an
+        # infrastructure-level number unrelated to any one account's plan.
+        quota_bytes=settings.default_user_quota_bytes,
     )
     db.session.add(owner)
     db.session.flush()

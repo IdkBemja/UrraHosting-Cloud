@@ -29,6 +29,12 @@ x-instance-env: &instance-env
   DEFAULT_USER_QUOTA_GB: ${DEFAULT_USER_QUOTA_GB}
   TRASH_RETENTION_DAYS: ${TRASH_RETENTION_DAYS}
   VERSION_RETENTION_COUNT: ${VERSION_RETENTION_COUNT}
+  # Real disk (bind-mounted DATA_DIR), not the memory-backed /tmp tmpfs
+  # below - large PUT/upload bodies get buffered here (see
+  # app/webdav_app.py CloudFileResource.begin_write and
+  # app/services/storage/s3_backend.py) before being hashed+stored, and
+  # MAX_UPLOAD_MB can be far bigger than the 128MB tmpfs allows.
+  TMPDIR: /data/files/.tmp
 
 x-container-hardening: &container-hardening
   cap_drop: ["ALL"]
@@ -93,7 +99,7 @@ services:
       dockerfile: Dockerfile
     container_name: ${INSTANCE_ID}_app
     restart: unless-stopped
-    command: ["sh", "-c", "python -m app.cli migrate && exec gunicorn --bind 0.0.0.0:${APP_PORT} --workers 1 --threads 8 --timeout 1900 app.main:app"]
+    command: ["sh", "-c", "mkdir -p /data/files/.tmp && python -m app.cli migrate && exec gunicorn --bind 0.0.0.0:${APP_PORT} --workers 1 --worker-class gthread --threads 8 --timeout 1900 app.main:app"]
     environment:
       <<: *instance-env
     volumes:
@@ -129,7 +135,14 @@ services:
       dockerfile: Dockerfile
     container_name: ${INSTANCE_ID}_webdav
     restart: unless-stopped
-    command: ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${WEBDAV_PORT} --workers 2 --threads 4 --timeout 1900 app.webdav_app:app"]
+    # --workers 1: WsgiDAV's LOCK/UNLOCK manager keeps its table in an
+    # in-memory dict scoped to a single process - multiple worker
+    # processes fragment that state across clients. --worker-class
+    # gthread makes --threads actually take effect (gunicorn's default
+    # "sync" class ignores it and serializes one request at a time per
+    # worker, which is what was silently starving concurrent DAV
+    # requests/connections under load).
+    command: ["sh", "-c", "mkdir -p /data/files/.tmp && exec gunicorn --bind 0.0.0.0:${WEBDAV_PORT} --workers 1 --worker-class gthread --threads 8 --timeout 1900 app.webdav_app:app"]
     environment:
       <<: *instance-env
     volumes:

@@ -20,15 +20,16 @@ def edit_storage():
 def update_storage():
     settings = InstanceSettings.get_singleton()
 
-    total_quota_gb = request.form.get("total_quota_gb", type=int)
+    # total_quota_bytes is intentionally NOT accepted here: it's
+    # provisioned externally by the hosting Dashboard via
+    # INSTANCE_STORAGE_GB (.env/compose.yml) and resynced on every boot
+    # (app/cli.py::_seed_instance_settings) - never admin/backend editable.
     default_user_quota_gb = request.form.get("default_user_quota_gb", type=int)
     max_upload_mb = request.form.get("max_upload_mb", type=int)
     trash_retention_days = request.form.get("trash_retention_days", type=int)
     version_retention_count = request.form.get("version_retention_count", type=int)
     allowed_extensions = request.form.get("allowed_extensions", "").strip()
 
-    if total_quota_gb and total_quota_gb > 0:
-        settings.total_quota_bytes = total_quota_gb * 1024**3
     if default_user_quota_gb and default_user_quota_gb > 0:
         settings.default_user_quota_bytes = default_user_quota_gb * 1024**3
     if max_upload_mb and max_upload_mb > 0:
