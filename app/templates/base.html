@@ -19,6 +19,7 @@
         <img src="{{ logo_url }}" alt="{{ app_name }}">
         <strong>{{ app_name }}</strong>
       </div>
+      <p class="version"> {{ app_version }}</p>
       <nav>
         <a href="{{ url_for('drive.my_drive') }}" class="{{ 'active' if request.blueprint == 'drive' and request.endpoint in ('drive.my_drive', 'drive.browse') else '' }}">Mi unidad</a>
         <a href="{{ url_for('drive.shared_with_me') }}" class="{{ 'active' if request.endpoint == 'drive.shared_with_me' else '' }}">Compartido conmigo</a>

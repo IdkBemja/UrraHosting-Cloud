@@ -12,6 +12,9 @@ from .extensions import bcrypt, csrf, db, limiter, login_manager
 from .services.storage import build_storage_backend
 from .services.theming import theme_context
 
+# Bumped by hand on release - not derived from git/package metadata.
+APP_VERSION = "1.0.0-Stable"
+
 
 def create_app() -> Flask:
     config, result = load_from_environ(os.environ)
@@ -91,6 +94,7 @@ def create_app() -> Flask:
         return {
             "current_year": time.strftime("%Y", time.gmtime()),
             "onlyoffice_enabled": bool(config.onlyoffice_server_url),
+            "app_version": APP_VERSION,
             **theme_context(),
         }
 

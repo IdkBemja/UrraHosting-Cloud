@@ -119,6 +119,7 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
 .sidebar .brand { display: flex; align-items: center; gap: .6rem; }
 .sidebar .brand img { width: 32px; height: 32px; border-radius: 8px; }
 .sidebar .brand strong { display: block; font-size: 1rem; }
+.sidebar .version { margin: -1rem 0 0; font-size: .72rem; color: rgba(255,255,255,.5); }
 .sidebar nav { display: flex; flex-direction: column; gap: .2rem; }
 .sidebar nav a {
   display: flex;
