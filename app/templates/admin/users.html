@@ -47,9 +47,20 @@
         <td>{{ user.username }}</td>
         <td class="muted">{{ user.email }}</td>
         <td>{{ user.role }}</td>
-        <td>{{ "%.2f"|format(user.storage_used_bytes / 1024**3) }} / {{ "%.0f"|format(user.quota_bytes / 1024**3) }} GB</td>
+        <td>
+          {{ "%.2f"|format(user.storage_used_bytes / 1024**3) }} GB
+          / {{ "Ilimitada" if user.quota_bytes == 0 else "%.0f GB"|format(user.quota_bytes / 1024**3) }}
+        </td>
         <td>{{ "Activo" if user.active else "Suspendido" }}</td>
         <td class="row-actions">
+          {% if current_user.is_owner %}
+          <form method="post" action="{{ url_for('admin.update_quota', user_id=user.id) }}" class="form-inline-tight">
+            {% include "_csrf.html" %}
+            <input name="quota_gb" type="number" min="0" placeholder="por defecto"
+                   title="Vacio = cuota por defecto de la instancia, 0 = ilimitada (solo topada por la cuota total de la instancia)">
+            <button class="btn ghost" type="submit">Guardar cuota</button>
+          </form>
+          {% endif %}
           {% if not user.is_owner %}
           <form method="post" action="{{ url_for('admin.toggle_active', user_id=user.id) }}">
             {% include "_csrf.html" %}

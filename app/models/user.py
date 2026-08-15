@@ -58,6 +58,14 @@ class User(db.Model, UserMixin):
 
     @property
     def storage_available_bytes(self) -> int:
+        if self.quota_bytes == 0:
+            # 0 is the sentinel for "no per-user cap" (admin/users.py
+            # update_quota) - bounded only by the instance's own total
+            # capacity instead of a fixed personal quota.
+            from .instance_settings import InstanceSettings
+
+            total = InstanceSettings.get_singleton().total_quota_bytes
+            return max(total - self.storage_used_bytes, 0)
         return max(self.quota_bytes - self.storage_used_bytes, 0)
 
     def __repr__(self) -> str:  # pragma: no cover - debug helper

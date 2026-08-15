@@ -6,7 +6,14 @@ from ..models.user import User
 
 
 def check_user_quota(user: User, additional_bytes: int) -> None:
-    if user.storage_used_bytes + additional_bytes > user.quota_bytes:
+    limit = user.quota_bytes
+    if limit == 0:
+        # 0 = unlimited per-user quota (see User.storage_available_bytes) -
+        # still bounded by the instance's own total capacity.
+        from ..models.instance_settings import InstanceSettings
+
+        limit = InstanceSettings.get_singleton().total_quota_bytes
+    if user.storage_used_bytes + additional_bytes > limit:
         raise StorageError("Cuota de almacenamiento del usuario excedida")
 
 

@@ -4,7 +4,7 @@ from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user
 
 from . import bp
-from ...blueprints.auth.decorators import admin_required
+from ...blueprints.auth.decorators import admin_required, owner_required
 from ...extensions import bcrypt, db
 from ...models.instance_settings import InstanceSettings
 from ...models.user import User
@@ -72,12 +72,32 @@ def toggle_active(user_id):
 
 
 @bp.route("/users/<uuid:user_id>/quota", methods=["POST"])
-@admin_required
+@owner_required
 def update_quota(user_id):
+    # owner_required (not admin_required): unlike everything else on this
+    # page, quota changes affect how much of the instance's own paid
+    # capacity an account can consume - including setting it to
+    # unlimited - so this is reserved for the owner, same reasoning as
+    # /admin/storage. Deliberately has no is_owner exclusion: the owner
+    # editing their own row (e.g. to go unlimited) is the main use case.
     user = db.get_or_404(User, user_id)
-    quota_gb = request.form.get("quota_gb", type=int)
-    if quota_gb and quota_gb > 0:
-        user.quota_bytes = quota_gb * 1024**3
-        db.session.commit()
-        flash(f"Cuota de '{user.username}' actualizada a {quota_gb} GB", "success")
+    raw = request.form.get("quota_gb", "").strip()
+
+    if raw == "":
+        # Blank: reset to the instance's current default user quota.
+        user.quota_bytes = InstanceSettings.get_singleton().default_user_quota_bytes
+        flash(f"Cuota de '{user.username}' restablecida al valor por defecto", "success")
+    else:
+        quota_gb = int(raw) if raw.lstrip("-").isdigit() else None
+        if quota_gb is None or quota_gb < 0:
+            flash("Cuota invalida", "error")
+            return redirect(url_for("admin.list_users"))
+        if quota_gb == 0:
+            user.quota_bytes = 0  # sentinel: unlimited, capped only by the instance's total quota
+            flash(f"Cuota de '{user.username}' establecida como ilimitada", "success")
+        else:
+            user.quota_bytes = quota_gb * 1024**3
+            flash(f"Cuota de '{user.username}' actualizada a {quota_gb} GB", "success")
+
+    db.session.commit()
     return redirect(url_for("admin.list_users"))
