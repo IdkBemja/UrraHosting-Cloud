@@ -9,6 +9,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from config.platform_config import load_from_environ
 
 from .extensions import bcrypt, csrf, db, limiter, login_manager
+from .services.errors import error_response, from_http_exception
 from .services.storage import build_storage_backend
 from .services.theming import theme_context
 
@@ -88,6 +89,24 @@ def create_app() -> Flask:
     app.register_blueprint(sso_bp)
 
     _install_security_headers(app, config)
+
+    # Every abort()/raised HTTPException in the app funnels through here
+    # instead of Werkzeug's raw default pages (see services/errors.py for
+    # the copy and the public-share-link special case).
+    @app.errorhandler(400)
+    @app.errorhandler(403)
+    @app.errorhandler(404)
+    @app.errorhandler(409)
+    @app.errorhandler(413)
+    @app.errorhandler(429)
+    def handle_http_error(error):
+        return from_http_exception(error)
+
+    @app.errorhandler(500)
+    def handle_server_error(error):
+        # Never surface `error`'s own description/stack info here - unlike
+        # the codes above, a 500 can carry internal exception details.
+        return error_response(500)
 
     @app.context_processor
     def inject_globals():
