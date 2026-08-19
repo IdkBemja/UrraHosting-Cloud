@@ -10,7 +10,7 @@ from flask_login import current_user, login_required
 from . import bp
 from ...extensions import bcrypt, db
 from ...models.app_password import AppPassword
-from ...services import activity
+from ...services import activity, patch_notes
 from ...services.theming import get_brand
 
 
@@ -47,6 +47,21 @@ def update_theme():
     current_user.theme_mode = mode
     db.session.commit()
     return redirect(url_for("drive.settings"))
+
+
+@bp.route("/settings/patch-notes-seen", methods=["POST"])
+@login_required
+def dismiss_patch_notes():
+    # Triggered via htmx (base.html's "Novedades" modal), not a normal
+    # navigation - hx-swap="none" means the response body is ignored, so a
+    # plain empty 204 (rather than update_theme()'s redirect) is all this
+    # needs. The Alpine `@click` on the same button hides the modal
+    # instantly on the client; this call is only what persists that the
+    # CURRENT version has been seen by THIS user (see
+    # app/services/patch_notes.py / User.dismissed_patch_notes_version).
+    current_user.dismissed_patch_notes_version = patch_notes.current_version()
+    db.session.commit()
+    return "", 204
 
 
 @bp.route("/settings/app-passwords", methods=["POST"])

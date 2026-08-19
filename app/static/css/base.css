@@ -174,6 +174,31 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
 }
 .card-highlight { border-color: var(--primary); }
 .card-narrow { max-width: 480px; }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, .5);
+}
+.modal-box {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 1.25rem 1.4rem;
+  width: min(560px, 94vw);
+}
+.modal-box h2 { margin: 0 0 .5rem; }
+.modal-actions { display: flex; justify-content: flex-end; gap: .55rem; margin-top: 1rem; }
+.patch-notes-body { max-height: min(60vh, 520px); overflow-y: auto; line-height: 1.55; }
+.patch-notes-body h3, .patch-notes-body h4 { margin: 1rem 0 .4rem; }
+.patch-notes-body ul, .patch-notes-body ol { padding-left: 1.3rem; }
+.patch-notes-body p, .patch-notes-body li { margin: .3rem 0; }
+.patch-notes-btn { margin-bottom: .5rem; }
 .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
 .stat-card { text-align: left; }
 .stat-card .value { font-size: 1.7rem; font-weight: 800; }

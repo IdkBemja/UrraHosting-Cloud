@@ -30,6 +30,10 @@ class User(db.Model, UserMixin):
     storage_used_bytes: Mapped[int] = mapped_column(db.BigInteger, nullable=False, default=0)
     active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     theme_mode: Mapped[str] = mapped_column(Enum(*THEME_MODES, name="user_theme_mode"), nullable=False, default="system")
+    # The CHANGELOG.md version this user last dismissed the "Novedades"
+    # modal for (see app/services/patch_notes.py) - compared against the
+    # current version to decide whether to auto-open the modal on load.
+    dismissed_patch_notes_version: Mapped[str | None] = mapped_column(String(32), nullable=True)
     totp_secret: Mapped[str | None] = mapped_column(String(64), nullable=True)
     totp_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     # List of bcrypt-hashed one-time recovery codes (Fase 3) - consumed

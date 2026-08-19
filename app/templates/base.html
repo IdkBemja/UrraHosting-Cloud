@@ -12,7 +12,7 @@
   <script src="{{ url_for('static', filename='js/confirm.js') }}" defer></script>
   <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
-<body hx-headers='{"X-CSRFToken": "{{ csrf_token() }}"}'>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token() }}"}' x-data="{ patchNotesOpen: {{ 'true' if show_patch_notes else 'false' }} }">
   <div class="app-shell">
     <aside class="sidebar">
       <div class="brand">
@@ -20,6 +20,9 @@
         <strong>{{ app_name }}</strong>
       </div>
       <p class="version"> {{ app_version }}</p>
+      {% if current_user.is_authenticated %}
+      <button type="button" class="btn ghost btn-block patch-notes-btn" @click="patchNotesOpen = true">Novedades</button>
+      {% endif %}
       <nav>
         <a href="{{ url_for('drive.my_drive') }}" class="{{ 'active' if request.blueprint == 'drive' and request.endpoint in ('drive.my_drive', 'drive.browse') else '' }}">Mi unidad</a>
         <a href="{{ url_for('drive.shared_with_me') }}" class="{{ 'active' if request.endpoint == 'drive.shared_with_me' else '' }}">Compartido conmigo</a>
@@ -70,5 +73,16 @@
       <footer class="app-footer">&copy; {{ current_year }} UrraHosting. Todos los derechos reservados.</footer>
     </main>
   </div>
+  {% if current_user.is_authenticated %}
+  <div class="modal-overlay" x-show="patchNotesOpen" style="display:none" @keydown.escape.window="patchNotesOpen = false">
+    <div class="modal-box patch-notes-box" @click.outside="patchNotesOpen = false">
+      <h2>Novedades <span class="muted small">{{ app_version }}</span></h2>
+      <div class="patch-notes-body">{{ patch_notes_html | safe }}</div>
+      <div class="modal-actions">
+        <button type="button" class="btn" hx-post="{{ url_for('drive.dismiss_patch_notes') }}" hx-swap="none" @click="patchNotesOpen = false">Cerrar</button>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 </body>
 </html>

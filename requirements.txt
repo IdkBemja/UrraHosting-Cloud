@@ -20,3 +20,5 @@ boto3==1.35.36
 pyotp==2.9.0
 qrcode==7.4.2
 PyJWT==2.9.0
+Markdown==3.7
+nh3==0.2.18

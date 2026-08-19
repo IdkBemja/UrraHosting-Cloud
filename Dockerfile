@@ -15,6 +15,9 @@ COPY config /app/config
 COPY app /app/app
 COPY migrations /app/migrations
 COPY alembic.ini /app/alembic.ini
+# Single source of truth for the panel's own version + "Novedades" modal
+# content (see app/services/patch_notes.py).
+COPY CHANGELOG.md /app/CHANGELOG.md
 
 RUN chown -R cloud:cloud /app
 

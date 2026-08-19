@@ -4,17 +4,16 @@ import os
 import time
 
 from flask import Flask, jsonify, redirect, request, url_for
+from flask_login import current_user
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from config.platform_config import load_from_environ
 
 from .extensions import bcrypt, csrf, db, limiter, login_manager
+from .services import patch_notes
 from .services.errors import error_response, from_http_exception
 from .services.storage import build_storage_backend
 from .services.theming import theme_context
-
-# Bumped by hand on release - not derived from git/package metadata.
-APP_VERSION = "1.0.0-Stable"
 
 
 def create_app() -> Flask:
@@ -110,10 +109,16 @@ def create_app() -> Flask:
 
     @app.context_processor
     def inject_globals():
+        notes = patch_notes.get_patch_notes()
+        show_patch_notes = (
+            current_user.is_authenticated and current_user.dismissed_patch_notes_version != notes.version
+        )
         return {
             "current_year": time.strftime("%Y", time.gmtime()),
             "onlyoffice_enabled": bool(config.onlyoffice_server_url),
-            "app_version": APP_VERSION,
+            "app_version": notes.version,
+            "patch_notes_html": notes.html,
+            "show_patch_notes": show_patch_notes,
             **theme_context(),
         }
 
