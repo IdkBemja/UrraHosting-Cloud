@@ -21,7 +21,10 @@
       </div>
       <p class="version"> {{ app_version }}</p>
       {% if current_user.is_authenticated %}
-      <button type="button" class="btn ghost btn-block patch-notes-btn" @click="patchNotesOpen = true">Novedades</button>
+      <!-- .stop is required: without it this click bubbles to document, where the
+           modal's @click.outside (below) sees it as an outside click and immediately
+           closes what this button just opened, in the same event dispatch. -->
+      <button type="button" class="btn ghost btn-block patch-notes-btn" @click.stop="patchNotesOpen = true">Novedades</button>
       {% endif %}
       <nav>
         <a href="{{ url_for('drive.my_drive') }}" class="{{ 'active' if request.blueprint == 'drive' and request.endpoint in ('drive.my_drive', 'drive.browse') else '' }}">Mi unidad</a>
